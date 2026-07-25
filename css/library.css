@@ -122,7 +122,7 @@ header img {
     border-color: rgba(140, 131, 117, 0.3);
 }
 
-.section-wrapper:hover img {
+.book-item:hover img {
     transform: translateY(-8px) scale(1.02);
     filter: drop-shadow(5px 5px 5px #222);
 }
