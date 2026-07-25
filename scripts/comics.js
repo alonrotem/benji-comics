@@ -1,3 +1,6 @@
+
+
+
 $(document).ready(function() {
     // 1. Inject DOM nodes sequentially
     for (var i = 1; i <= totalPages; i++) {
@@ -137,4 +140,34 @@ $(document).ready(function() {
             flipbook.turn("next");
         }
     });
+
+
+// Global tracking variables for zoom level and position panning
+var currentScale = 1;
+var maxScale = 3;
+var minScale = 1;
+
+// Bind to the outer wrapper container so the entire workspace scales uniformly
+$("#viewport-wrapper").on("wheel", function(e) {
+    // Only intercept scroll if the loading screen is gone
+    if (!$("#flipbook").turn("is")) return;
+    
+    e.preventDefault(); // Stop the default browser page scroll mechanism
+
+    // Determine scroll direction (DeltaY < 0 means scrolling up / zooming in)
+    var delta = e.originalEvent.deltaY;
+    var zoomStep = 0.1;
+
+    if (delta < 0) {
+        currentScale = Math.min(maxScale, currentScale + zoomStep);
+    } else {
+        currentScale = Math.max(minScale, currentScale - zoomStep);
+    }
+
+    // Apply the scaling factor smoothly to the parent wrapper box using CSS
+    $("#flipbook-wrapper").css({
+        "transform": "scale(" + currentScale + ")",
+        "transition": "transform 0.1s ease-out" // Keeps tracking snappy and fluent
+    });
+});    
 });

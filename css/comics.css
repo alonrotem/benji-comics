@@ -60,12 +60,26 @@ body, html {
     padding: 5px 20px; 
 }
 
+/*
 #flipbook-wrapper {
     position: relative;
     display: block;
     margin: 0 auto;
-    visibility: hidden; /* Prevent visual flashing during rendering calculations */
+    visibility: hidden; 
 }
+*/
+#flipbook-wrapper {
+    position: relative;
+    display: block;
+    margin: 0 auto;
+    visibility: hidden;
+    
+    /* ADD THESE LINES FOR MOUSE WHEEL ZOOM SUPPORT: */
+    transform-origin: center center; /* Ensures it zooms from the middle fold out */
+    will-change: transform;          /* Forces GPU optimization to prevent blurring */
+    transition: transform 0.1s ease-out;
+}
+
 
 #flipbook {
     display: block;
