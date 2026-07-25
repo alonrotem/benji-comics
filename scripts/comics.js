@@ -9,7 +9,21 @@ var isDragging = false;
 var startX = 0, startY = 0;
 var translateX = 0, translateY = 0;
 
+var touchStartDist = 0;
+var initialScale = 1;
+var isMovingBook = false;
+var touchStartX = 0, touchStartY = 0;
+
 $(document).ready(function() {
+
+    // Helper to compute spatial distance between two active finger contacts
+    function getTouchDistance(e) {
+        var touches = e.originalEvent.touches;
+        if (touches.length < 2) return 0;
+        var dx = touches[0].clientX - touches[1].clientX;
+        var dy = touches[0].clientY - touches[1].clientY;
+        return Math.sqrt(dx * dx + dy * dy);
+    }    
 
     function updatePanCursor() {
         if (currentScale > 1) {
@@ -315,6 +329,85 @@ function triggerZoomReset() {
 $("#floating-reset-zoom-btn").click(function(e) {
     e.preventDefault();
     triggerZoomReset();
+});
+
+// Intercept touch initialization inputs
+$("#viewport-wrapper").on("touchstart", function(e) {
+    var numTouches = e.originalEvent.touches.length;
+
+    // --- CASE A: TWO-FINGER PINCH ZOOM STARTED ---
+    if (numTouches === 2) {
+        isMovingBook = false; // Disable dragging tracking loops
+        touchStartDist = getTouchDistance(e);
+        initialScale = currentScale;
+        e.preventDefault();
+    }
+    // --- CASE B: SINGLE-FINGER ZOOM PANNING STARTED ---
+    else if (numTouches === 1 && currentScale > 1) {
+        isMovingBook = true;
+        touchStartX = e.originalEvent.touches[0].clientX - translateX;
+        touchStartY = e.originalEvent.touches[0].clientY - translateY;
+        e.preventDefault();
+    }
+});
+
+// Calculate live movement steps
+$("#viewport-wrapper").on("touchmove", function(e) {
+    var numTouches = e.originalEvent.touches.length;
+
+    // --- CASE A: ACTIVE TWO-FINGER PINCHING TRACKING LOOP ---
+    if (numTouches === 2 && touchStartDist > 0) {
+        e.preventDefault();
+        var currentDist = getTouchDistance(e);
+        if (currentDist === 0) return;
+
+        // Scale ratio computation mapping
+        var pinchFactor = currentDist / touchStartDist;
+        currentScale = Math.min(maxScale, Math.max(minScale, initialScale * pinchFactor));
+
+        // Smooth out layout settings dynamically depending on the current zoom state
+        if (currentScale === 1) {
+            translateX = 0;
+            translateY = 0;
+            $("#flipbook-wrapper").css({
+                "transform": "scale(1) translate(0px, 0px)",
+                "transition": "none"
+            });
+            $("#floating-reset-zoom-btn").css({ "opacity": "0", "visibility": "hidden", "pointer-events": "none" });
+            $(".book-edge-hover").css("pointer-events", "auto");
+            $("#floating-copyright").css({ "opacity": "0.4", "visibility": "visible" });
+        } else {
+            $("#flipbook-wrapper").css({
+                "transform": "scale(" + currentScale + ") translate(" + (translateX / currentScale) + "px, " + (translateY / currentScale) + "px)",
+                "transition": "none"
+            });
+            $("#floating-reset-zoom-btn").css({ "opacity": "0.5", "visibility": "visible", "pointer-events": "auto" });
+            $(".book-edge-hover").css("pointer-events", "none");
+            $("#floating-copyright").css({ "opacity": "0", "visibility": "hidden" });
+        }
+        updatePanCursor();
+    }
+    // --- CASE B: ACTIVE SINGLE-FINGER DRAGGING TRACKING LOOP ---
+    else if (numTouches === 1 && isMovingBook && currentScale > 1) {
+        e.preventDefault();
+        translateX = e.originalEvent.touches[0].clientX - touchStartX;
+        translateY = e.originalEvent.touches[0].clientY - touchStartY;
+
+        $("#flipbook-wrapper").css({
+            "transform": "scale(" + currentScale + ") translate(" + (translateX / currentScale) + "px, " + (translateY / currentScale) + "px)",
+            "transition": "none"
+        });
+    }
+});
+
+// Clear track states on release
+$(document).on("touchend touchcancel", function(e) {
+    if (e.originalEvent.touches.length < 2) {
+        touchStartDist = 0;
+    }
+    if (e.originalEvent.touches.length === 0) {
+        isMovingBook = false;
+    }
 });
 
    
