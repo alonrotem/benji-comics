@@ -35,7 +35,7 @@ $(document).ready(function() {
 
     // 1. Inject DOM nodes sequentially
     for (var i = 1; i <= totalPages; i++) {
-        var pageNum = i < 10 ?  ((totalPages > 99) ? '00' : '0') + i : i;
+        var pageNum = i < 10 ?  ((totalPages > 99) ? '00' : '0') + i : ((totalPages > 99 && i < 100) ? '0' : '') + i;
         var pageDiv = $('<div class="page-node"></div>');
         var img = $('<img src="./pages/' + pageNum + '.png" alt="Page ' + pageNum + '">');
         
