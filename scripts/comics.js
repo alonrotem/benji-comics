@@ -1,7 +1,24 @@
 
+// Global workspace tracking configuration parameters
+var currentScale = 1;
+var maxScale = 3;
+var minScale = 1;
 
+// Drag position variables
+var isDragging = false;
+var startX = 0, startY = 0;
+var translateX = 0, translateY = 0;
 
 $(document).ready(function() {
+
+    function updatePanCursor() {
+        if (currentScale > 1) {
+            $("#viewport-wrapper").css("cursor", isDragging ? "grabbing" : "grab");
+        } else {
+            $("#viewport-wrapper").css("cursor", "default");
+        }
+    }
+
     // 1. Inject DOM nodes sequentially
     for (var i = 1; i <= totalPages; i++) {
         var pageNum = i < 10 ? '0' + i : i;
@@ -54,13 +71,23 @@ $(document).ready(function() {
             pages: totalPages,
             when: {
                 turning: function(e, page, view) {
-                    // RESET ZOOM ON PAGE TURN:
-                    currentScale = 1;
-                    $("#flipbook-wrapper").css({
-                        "transform": "scale(1)",
-                        "transform-origin": "center center"
-                    });
+                    isTurning = true;
+                    $(".book-edge-hover").css("pointer-events", "none");
 
+                    // --- RESET MAGNIFICATION AND POSITION TRANSLATIONS ON FLIPS ---
+                    currentScale = 1;
+                    translateX = 0;
+                    translateY = 0;
+                    updatePanCursor();
+
+                    triggerZoomReset();
+
+                    $("#flipbook-wrapper").css({
+                        "transform": "scale(1) translate(0px, 0px)",
+                        "transform-origin": "center center",
+                        "transition": "transform 0.15s ease-out"
+                    });
+                    
                     $("#floating-copyright").css({ "opacity": "0.4", "visibility": "visible" });
 
                     if (page == 1 || page == totalPages) {
@@ -162,29 +189,55 @@ $("#viewport-wrapper").on("mousemove", function(e) {
         var wrapper = $("#flipbook-wrapper");
         if (!wrapper.length) return;
 
-        // Find the bounding box coordinates of the book wrapper
         var rect = wrapper[0].getBoundingClientRect();
-        
-        // Calculate the mouse position as a percentage of the book's width and height
         var mouseX = ((e.clientX - rect.left) / rect.width) * 100;
         var mouseY = ((e.clientY - rect.top) / rect.height) * 100;
 
-        // Bound percentages between 0% and 100% to prevent edge tearing
         mouseX = Math.max(0, Math.min(100, mouseX));
         mouseY = Math.max(0, Math.min(100, mouseY));
 
-        // Update the origin seamlessly while unzoomed
         wrapper.css("transform-origin", mouseX + "% " + mouseY + "%");
     }
 });
 
+$("#viewport-wrapper").on("mousedown", function(e) {
+    // Only allow dragging when zoomed in
+    if (currentScale > 1) {
+        isDragging = true;
+        startX = e.clientX - translateX;
+        startY = e.clientY - translateY;
+        updatePanCursor();
+        e.preventDefault();
+    }
+});
+
+$(document).on("mousemove", function(e) {
+    if (!isDragging) return;
+
+    // Calculate displacement vectors from initial down click offset positions
+    translateX = e.clientX - startX;
+    translateY = e.clientY - startY;
+
+    // Apply combined transformation framework (Matrix scaling + translations)
+    $("#flipbook-wrapper").css({
+        "transform": "scale(" + currentScale + ") translate(" + (translateX / currentScale) + "px, " + (translateY / currentScale) + "px)",
+        "transition": "none" // Disables inertia transitions during tracking for crisp feedback
+    });
+});
+
+$(document).on("mouseup", function() {
+    if (isDragging) {
+        isDragging = false;
+        updatePanCursor();
+    }
+});
+
 // Interactive scroll wheel handler
-// Interactive scroll wheel handler
+// Find your existing workspace scroll wheel handler block, update its visibility rules:
 $("#viewport-wrapper").on("wheel", function(e) {
     if (!$("#flipbook").turn("is")) return;
     
     e.preventDefault(); 
-
     var delta = e.originalEvent.deltaY;
     var zoomStep = 0.15; 
 
@@ -194,29 +247,75 @@ $("#viewport-wrapper").on("wheel", function(e) {
         currentScale = Math.max(minScale, currentScale - zoomStep);
     }
 
-    // Apply the scaling factor with a subtle scale transition
-    $("#flipbook-wrapper").css({
-        "transform": "scale(" + currentScale + ")",
-        "transition": "transform 0.08s ease-out" 
-    });
-
-    // --- NEW: DYNAMIC COPYRIGHT FOOTER TOGGLE ---
-    if (currentScale > 1) {
-        // Fade out and disable mouse interaction when zoomed in
-        $("#floating-copyright").css({ "opacity": "0", "visibility": "hidden" });
-    } else {
-        // Re-enable original semi-transparent styling when fully zoomed out
-        $("#floating-copyright").css({ "opacity": "0.4", "visibility": "visible" });
-    }
-
-    // Reset origin back to center if fully zoomed out to preserve original layout sizing
     if (currentScale === 1) {
+        // Run standard cleanup parameters
+        translateX = 0;
+        translateY = 0;
+        $("#flipbook-wrapper").css({
+            "transform": "scale(1) translate(0px, 0px)",
+            "transition": "transform 0.15s ease-out"
+        });
+        
+        // Hide button when scale drops back to baseline
+        $("#floating-reset-zoom-btn").css({ "opacity": "0", "visibility": "hidden", "pointer-events": "none" });
+
+        $(".book-edge-hover").css("pointer-events", "auto");
+        $("#floating-copyright").css({ "opacity": "0.4", "visibility": "visible" });
+
         setTimeout(function() {
             if (currentScale === 1) {
                 $("#flipbook-wrapper").css("transform-origin", "center center");
             }
-        }, 100);
+        }, 150);
+    } else {
+        $("#flipbook-wrapper").css({
+            "transform": "scale(" + currentScale + ") translate(" + (translateX / currentScale) + "px, " + (translateY / currentScale) + "px)",
+            "transition": "transform 0.08s ease-out" 
+        });
+
+        // Show button semi-transparently while zoomed in
+        $("#floating-reset-zoom-btn").css({ "opacity": "0.5", "visibility": "visible", "pointer-events": "auto" });
+
+        $(".book-edge-hover").css("pointer-events", "none");
+        $("#floating-copyright").css({ "opacity": "0", "visibility": "hidden" });
     }
+    
+    updatePanCursor();
 });
+
+
+// Reusable tracking script to reset the workspace back to baseline 100% scale
+function triggerZoomReset() {
+    currentScale = 1;
+    translateX = 0;
+    translateY = 0;
+    updatePanCursor();
+
+    // Smoothly animate the page wrapper frame back to center canvas targets
+    $("#flipbook-wrapper").css({
+        "transform": "scale(1) translate(0px, 0px)",
+        "transition": "transform 0.25s ease-out" // Gives a pleasant snap effect on click
+    });
+
+    // Hide the reset button smoothly
+    $("#floating-reset-zoom-btn").css({ "opacity": "0", "visibility": "hidden", "pointer-events": "none" });
+
+    // Restore interactive components
+    $(".book-edge-hover").css("pointer-events", "auto");
+    $("#floating-copyright").css({ "opacity": "0.4", "visibility": "visible" });
+
+    setTimeout(function() {
+        if (currentScale === 1) {
+            $("#flipbook-wrapper").css("transform-origin", "center center");
+        }
+    }, 250);
+}
+
+// Bind click event handler to the new element
+$("#floating-reset-zoom-btn").click(function(e) {
+    e.preventDefault();
+    triggerZoomReset();
+});
+
    
 });

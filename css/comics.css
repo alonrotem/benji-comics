@@ -7,8 +7,8 @@ body, html {
     padding: 0;
     width: 100%;
     height: 100%;
-    background-color: #eae6df; /* Soft warm linen backdrop */
-    overflow: hidden; 
+    background-color: #eae6df;
+    overflow: hidden; /* Essential to hide panned canvas boundaries */
     font-family: system-ui, sans-serif;
     display: flex;
     justify-content: center;
@@ -67,17 +67,27 @@ body, html {
     margin: 0 auto;
     visibility: hidden; 
 }
-*/
+
 #flipbook-wrapper {
     position: relative;
     display: block;
     margin: 0 auto;
     visibility: hidden;
     
-    /* ADD THESE LINES FOR MOUSE WHEEL ZOOM SUPPORT: */
-    transform-origin: center center; /* Ensures it zooms from the middle fold out */
-    will-change: transform;          /* Forces GPU optimization to prevent blurring */
+    transform-origin: center center; 
+    will-change: transform;
     transition: transform 0.1s ease-out;
+}
+*/
+#flipbook-wrapper {
+    position: relative;
+    display: block;
+    margin: 0 auto;
+    visibility: hidden;
+    transform-origin: center center;
+    will-change: transform;
+    user-select: none;          /* Block accidental system highlights */
+    -webkit-user-select: none;
 }
 
 
@@ -96,9 +106,10 @@ body, html {
 #flipbook img {
     width: 100%;
     height: 100%;
-    object-fit: contain; 
+    object-fit: contain;
     display: block;
-    pointer-events: none; 
+    pointer-events: none;       
+    -webkit-user-drag: none;    /* Strict browser drag execution lockdown */
 }
 
 /* Soft center fold depth shadows */
@@ -201,5 +212,58 @@ body, html {
     #floating-download-btn svg {
         width: 20px;
         height: 20px;
+    }
+}
+
+#floating-reset-zoom-btn {
+    position: fixed;
+    top: 24px;
+    right: 96px; /* Offset to sit cleanly to the left of your right navigation elements */
+    z-index: 1000;
+    padding: 10px 16px;
+    background-color: rgba(250, 248, 245, 0.6); /* Transparent matching paper color */
+    color: #7a7164;            /* Theme matching text tint */
+    border: 1px solid rgba(140, 131, 117, 0.15);
+    border-radius: 30px;       /* Sleek pill shape design */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-family: system-ui, sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    opacity: 0;                /* Invisible by default */
+    visibility: hidden;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+#floating-reset-zoom-btn:hover {
+    opacity: 1 !important;     /* Force full opacity on direct hover action */
+    background-color: rgba(250, 248, 245, 0.9);
+    color: #4a443c;
+    border-color: rgba(140, 131, 117, 0.3);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+#floating-reset-zoom-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Position adjustment for mobile display grids */
+@media (max-width: 600px) {
+    #floating-reset-zoom-btn {
+        top: 16px;
+        right: 64px;
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
+    #floating-reset-zoom-btn span {
+        display: none; /* Hides text on small screens to save valuable viewport space */
     }
 }
