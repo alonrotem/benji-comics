@@ -60,7 +60,7 @@ header p {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 240px; /* Fixed ideal width for standalone presentation layout */
+    width: 300px; /* Fixed ideal width for standalone presentation layout */
 }
 
 /* Soft Paper Cover Container */
