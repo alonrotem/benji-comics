@@ -1,0 +1,28 @@
+#floating-copyright {
+    position: fixed;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 999; /* Sits right beneath navigation buttons but above the book background */
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    color: #7a7164;            /* Matches your arrow button text theme color */
+    opacity: 0.4;              /* Semi-transparent by default */
+    pointer-events: auto;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    white-space: nowrap;
+    user-select: none;         /* Prevents accidental text highlights during mouse dragging */
+}
+
+#floating-copyright:hover {
+    opacity: 1;                /* Fully vibrant when hovered */
+}
+
+/* Keep it legible on small mobile screens */
+@media (max-width: 600px) {
+    #floating-copyright {
+        font-size: 0.75rem;
+        bottom: 8px;
+    }
+}

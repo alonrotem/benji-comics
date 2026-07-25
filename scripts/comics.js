@@ -61,6 +61,8 @@ $(document).ready(function() {
                         "transform-origin": "center center"
                     });
 
+                    $("#floating-copyright").css({ "opacity": "0.4", "visibility": "visible" });
+
                     if (page == 1 || page == totalPages) {
                         flipbook.turn('corner', 'null');
                     }
@@ -177,13 +179,14 @@ $("#viewport-wrapper").on("mousemove", function(e) {
 });
 
 // Interactive scroll wheel handler
+// Interactive scroll wheel handler
 $("#viewport-wrapper").on("wheel", function(e) {
     if (!$("#flipbook").turn("is")) return;
     
-    e.preventDefault(); // Stop default browser page scrolling
+    e.preventDefault(); 
 
     var delta = e.originalEvent.deltaY;
-    var zoomStep = 0.15; // Slightly faster step for a more responsive feel
+    var zoomStep = 0.15; 
 
     if (delta < 0) {
         currentScale = Math.min(maxScale, currentScale + zoomStep);
@@ -196,6 +199,15 @@ $("#viewport-wrapper").on("wheel", function(e) {
         "transform": "scale(" + currentScale + ")",
         "transition": "transform 0.08s ease-out" 
     });
+
+    // --- NEW: DYNAMIC COPYRIGHT FOOTER TOGGLE ---
+    if (currentScale > 1) {
+        // Fade out and disable mouse interaction when zoomed in
+        $("#floating-copyright").css({ "opacity": "0", "visibility": "hidden" });
+    } else {
+        // Re-enable original semi-transparent styling when fully zoomed out
+        $("#floating-copyright").css({ "opacity": "0.4", "visibility": "visible" });
+    }
 
     // Reset origin back to center if fully zoomed out to preserve original layout sizing
     if (currentScale === 1) {
