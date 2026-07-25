@@ -1,3 +1,53 @@
+/*Back button*/
+#floating-back-btn {
+    position: fixed;
+    top: 24px;
+    left: 24px;
+    z-index: 1000;
+    width: 54px;
+    height: 54px;
+    background-color: rgba(250, 248, 245, 0.4); /* Matches your arrow navigation background */
+    color: #7a7164;            /* Matches your arrow navigation text color */
+    border: 1px solid rgba(140, 131, 117, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0.5;              /* Semi-transparent by default */
+    transition: all 0.3s ease;
+    text-decoration: none;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+#floating-back-btn:hover {
+    opacity: 1;                /* Fully visible on hover */
+    background-color: rgba(250, 248, 245, 0.8);
+    color: #4a443c;
+    border-color: rgba(140, 131, 117, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+#floating-back-btn svg {
+    width: 22px;
+    height: 22px;
+}
+
+/* Shift position slightly on small mobile screens to stay uniform with the arrow buttons */
+@media (max-width: 600px) {
+    #floating-back-btn {
+        top: 16px;
+        left: 16px;
+        width: 40px;
+        height: 40px;
+    }
+    #floating-back-btn svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
 #floating-copyright {
     position: fixed;
     bottom: 12px;

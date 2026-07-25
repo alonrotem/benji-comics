@@ -18,8 +18,13 @@ body {
 
 header {
     text-align: center;
-    margin-bottom: 50px;
+    /*margin-bottom: 50px;*/
     max-width: 600px;
+}
+
+header a, header a:visited, header a:hover, header a:active {
+    text-decoration: none;
+    color: inherit;
 }
 
 header h1 {
@@ -95,12 +100,31 @@ header p {
     transition: transform 0.4s ease;
 }
 
+.section-wrapper {
+    width: 100%;
+}
+
+.section-wrapper img {
+    width: 100%;
+    transition: transform 0.4s ease;
+}
+
+header img {
+    width: 150px;
+}
+
 /* Elegant Hover Physics */
-.book-item:hover .cover-wrapper {
+.book-item:hover .cover-wrapper{
     transform: translateY(-8px) scale(1.02);
     box-shadow: 0 16px 32px rgba(44, 37, 30, 0.15), 
                 0 4px 10px rgba(44, 37, 30, 0.08);
+    
     border-color: rgba(140, 131, 117, 0.3);
+}
+
+.section-wrapper:hover img {
+    transform: translateY(-8px) scale(1.02);
+    filter: drop-shadow(5px 5px 5px #222);
 }
 
 .book-item:hover .cover-wrapper img {
