@@ -19,11 +19,11 @@ $(document).ready(function() {
     // Helper to compute spatial distance between two active finger contacts
     function getTouchDistance(e) {
         var touches = e.originalEvent.touches;
-        if (touches.length < 2) return 0;
+        if (!touches || touches.length < 2) return 0;
         var dx = touches[0].clientX - touches[1].clientX;
         var dy = touches[0].clientY - touches[1].clientY;
         return Math.sqrt(dx * dx + dy * dy);
-    }    
+    }  
 
     function updatePanCursor() {
         if (currentScale > 1) {
@@ -335,37 +335,33 @@ $("#floating-reset-zoom-btn").click(function(e) {
 $("#viewport-wrapper").on("touchstart", function(e) {
     var numTouches = e.originalEvent.touches.length;
 
-    // --- CASE A: TWO-FINGER PINCH ZOOM STARTED ---
+    // --- CASE A: TWO FINGERS INITIALIZE PINCH EXPAND ---
     if (numTouches === 2) {
-        isMovingBook = false; // Disable dragging tracking loops
+        isMovingBook = false; 
         touchStartDist = getTouchDistance(e);
         initialScale = currentScale;
-        e.preventDefault();
     }
-    // --- CASE B: SINGLE-FINGER ZOOM PANNING STARTED ---
+    // --- CASE B: SINGLE FINGER INITIATES ZOOM DRAG PAN ---
     else if (numTouches === 1 && currentScale > 1) {
         isMovingBook = true;
         touchStartX = e.originalEvent.touches[0].clientX - translateX;
         touchStartY = e.originalEvent.touches[0].clientY - translateY;
-        e.preventDefault();
     }
 });
 
-// Calculate live movement steps
+// Dynamic movement vector updater loop
 $("#viewport-wrapper").on("touchmove", function(e) {
     var numTouches = e.originalEvent.touches.length;
 
-    // --- CASE A: ACTIVE TWO-FINGER PINCHING TRACKING LOOP ---
+    // --- CASE A: TRACKING ACTIVE RETINA PINCH COMPRESSIONS ---
     if (numTouches === 2 && touchStartDist > 0) {
-        e.preventDefault();
+        e.preventDefault(); // Lock browser layout bounds completely
         var currentDist = getTouchDistance(e);
         if (currentDist === 0) return;
 
-        // Scale ratio computation mapping
         var pinchFactor = currentDist / touchStartDist;
         currentScale = Math.min(maxScale, Math.max(minScale, initialScale * pinchFactor));
 
-        // Smooth out layout settings dynamically depending on the current zoom state
         if (currentScale === 1) {
             translateX = 0;
             translateY = 0;
@@ -381,13 +377,13 @@ $("#viewport-wrapper").on("touchmove", function(e) {
                 "transform": "scale(" + currentScale + ") translate(" + (translateX / currentScale) + "px, " + (translateY / currentScale) + "px)",
                 "transition": "none"
             });
-            $("#floating-reset-zoom-btn").css({ "opacity": "0.5", "visibility": "visible", "pointer-events": "auto" });
+            $("#floating-reset-zoom-btn").css({ "opacity": "0.6", "visibility": "visible", "pointer-events": "auto" });
             $(".book-edge-hover").css("pointer-events", "none");
             $("#floating-copyright").css({ "opacity": "0", "visibility": "hidden" });
         }
         updatePanCursor();
     }
-    // --- CASE B: ACTIVE SINGLE-FINGER DRAGGING TRACKING LOOP ---
+    // --- CASE B: TRACKING MOBILE MULTI-AXIS DRAG PANNING ---
     else if (numTouches === 1 && isMovingBook && currentScale > 1) {
         e.preventDefault();
         translateX = e.originalEvent.touches[0].clientX - touchStartX;
@@ -400,7 +396,7 @@ $("#viewport-wrapper").on("touchmove", function(e) {
     }
 });
 
-// Clear track states on release
+// Reset position memory blocks on touch releases safely
 $(document).on("touchend touchcancel", function(e) {
     if (e.originalEvent.touches.length < 2) {
         touchStartDist = 0;

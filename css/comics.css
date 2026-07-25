@@ -219,13 +219,13 @@ body, html {
 #floating-reset-zoom-btn {
     position: fixed;
     top: 24px;
-    right: 96px; /* Offset to sit cleanly to the left of your right navigation elements */
+    right: 96px; 
     z-index: 1000;
     padding: 10px 16px;
-    background-color: rgba(250, 248, 245, 0.6); /* Transparent matching paper color */
-    color: #7a7164;            /* Theme matching text tint */
+    background-color: rgba(250, 248, 245, 0.6); 
+    color: #7a7164;            
     border: 1px solid rgba(140, 131, 117, 0.15);
-    border-radius: 30px;       /* Sleek pill shape design */
+    border-radius: 30px;       
     display: flex;
     align-items: center;
     gap: 8px;
@@ -233,17 +233,17 @@ body, html {
     font-family: system-ui, sans-serif;
     font-size: 0.85rem;
     font-weight: 500;
-    opacity: 0;                /* Invisible by default */
+    opacity: 0;                
     visibility: hidden;
     pointer-events: none;
-    transition: all 0.3s ease;
+    transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.3s ease;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
 }
 
 #floating-reset-zoom-btn:hover {
-    opacity: 1 !important;     /* Force full opacity on direct hover action */
+    opacity: 1 !important;     
     background-color: rgba(250, 248, 245, 0.9);
     color: #4a443c;
     border-color: rgba(140, 131, 117, 0.3);
@@ -256,15 +256,17 @@ body, html {
     height: 18px;
 }
 
-/* Position adjustment for mobile display grids */
+/* Rigid position overlay locks for mobile viewport boundaries */
 @media (max-width: 600px) {
     #floating-reset-zoom-btn {
-        top: 16px;
-        right: 64px;
+        position: fixed !important; /* Force layout isolation */
+        top: 16px !important;
+        right: 16px !important;    /* Shift away from nav conflict points */
+        left: auto !important;
         padding: 8px 12px;
         font-size: 0.8rem;
     }
     #floating-reset-zoom-btn span {
-        display: none; /* Hides text on small screens to save valuable viewport space */
+        display: none; 
     }
 }
