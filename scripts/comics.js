@@ -54,6 +54,13 @@ $(document).ready(function() {
             pages: totalPages,
             when: {
                 turning: function(e, page, view) {
+                    // RESET ZOOM ON PAGE TURN:
+                    currentScale = 1;
+                    $("#flipbook-wrapper").css({
+                        "transform": "scale(1)",
+                        "transform-origin": "center center"
+                    });
+
                     if (page == 1 || page == totalPages) {
                         flipbook.turn('corner', 'null');
                     }
@@ -142,21 +149,41 @@ $(document).ready(function() {
     });
 
 
-// Global tracking variables for zoom level and position panning
+// Global tracking variables for zoom level and position origin
 var currentScale = 1;
 var maxScale = 3;
 var minScale = 1;
 
-// Bind to the outer wrapper container so the entire workspace scales uniformly
+// Continuously update the transform origin based on cursor movement
+$("#viewport-wrapper").on("mousemove", function(e) {
+    if (currentScale === 1) {
+        var wrapper = $("#flipbook-wrapper");
+        if (!wrapper.length) return;
+
+        // Find the bounding box coordinates of the book wrapper
+        var rect = wrapper[0].getBoundingClientRect();
+        
+        // Calculate the mouse position as a percentage of the book's width and height
+        var mouseX = ((e.clientX - rect.left) / rect.width) * 100;
+        var mouseY = ((e.clientY - rect.top) / rect.height) * 100;
+
+        // Bound percentages between 0% and 100% to prevent edge tearing
+        mouseX = Math.max(0, Math.min(100, mouseX));
+        mouseY = Math.max(0, Math.min(100, mouseY));
+
+        // Update the origin seamlessly while unzoomed
+        wrapper.css("transform-origin", mouseX + "% " + mouseY + "%");
+    }
+});
+
+// Interactive scroll wheel handler
 $("#viewport-wrapper").on("wheel", function(e) {
-    // Only intercept scroll if the loading screen is gone
     if (!$("#flipbook").turn("is")) return;
     
-    e.preventDefault(); // Stop the default browser page scroll mechanism
+    e.preventDefault(); // Stop default browser page scrolling
 
-    // Determine scroll direction (DeltaY < 0 means scrolling up / zooming in)
     var delta = e.originalEvent.deltaY;
-    var zoomStep = 0.1;
+    var zoomStep = 0.15; // Slightly faster step for a more responsive feel
 
     if (delta < 0) {
         currentScale = Math.min(maxScale, currentScale + zoomStep);
@@ -164,10 +191,20 @@ $("#viewport-wrapper").on("wheel", function(e) {
         currentScale = Math.max(minScale, currentScale - zoomStep);
     }
 
-    // Apply the scaling factor smoothly to the parent wrapper box using CSS
+    // Apply the scaling factor with a subtle scale transition
     $("#flipbook-wrapper").css({
         "transform": "scale(" + currentScale + ")",
-        "transition": "transform 0.1s ease-out" // Keeps tracking snappy and fluent
+        "transition": "transform 0.08s ease-out" 
     });
-});    
+
+    // Reset origin back to center if fully zoomed out to preserve original layout sizing
+    if (currentScale === 1) {
+        setTimeout(function() {
+            if (currentScale === 1) {
+                $("#flipbook-wrapper").css("transform-origin", "center center");
+            }
+        }, 100);
+    }
+});
+   
 });
