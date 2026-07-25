@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Soft Elegant Photo Booklet</title>
+    <!-- Your exact script references -->
+    <script src="../scripts/turnjs4/extras/jquery.min.1.7.js"></script>
+    <script src="../scripts/turnjs4/lib/turn.min.js"></script>
+    <link rel="stylesheet" href="../css/comics.css">
+</head>
+<body>
+
+    <!-- Loading Screen -->
+    <div id="loader-overlay">
+        <div class="spinner"></div>
+        <div class="loader-text" id="load-progress">Loading pages (0%)</div>
+    </div>
+
+    <!-- Floating Back Button -->
+    <a href="../index.html" id="floating-back-btn" title="Back to Library">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+    </a>
+
+    <div id="viewport-wrapper">
+        <button class="nav-btn" id="prev-btn">&#10094;</button>
+        
+        <div id="flipbook-wrapper">
+            <div id="flipbook">
+                <!-- Structural HTML built dynamically below -->
+            </div>
+        </div>
+
+        <button class="nav-btn" id="next-btn">&#10095;</button>
+    </div>
+
+    <a href="./full/super-benji-2.pdf" download="./full/super-benji-2.pdf" id="floating-download-btn" title="Download the whole book">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+    </a>
+
+    <script>
+        var totalPages = 58;
+        var flipbook = $("#flipbook");
+        var baseRatio = 1.333; 
+        var loadedCount = 0;
+    </script>
+    <script src="../scripts/comics.js"></script>
+
+</body>
+</html>

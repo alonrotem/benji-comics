@@ -1,0 +1,241 @@
+* {
+    box-sizing: border-box;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #eae6df; /* Soft warm linen backdrop */
+    overflow: hidden; 
+    font-family: system-ui, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Fullscreen Loading Overlay */
+#loader-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: #eae6df;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.5s ease;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(140, 131, 117, 0.2);
+    border-top-color: #8c8375;
+    border-radius: 50%;
+    animation: spin 1s infinite linear;
+}
+
+.loader-text {
+    margin-top: 15px;
+    color: #8c8375;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Maximized viewport wrapper with tiny vertical padding */
+#viewport-wrapper {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px 20px; 
+}
+
+#flipbook-wrapper {
+    position: relative;
+    display: block;
+    margin: 0 auto;
+    visibility: hidden; /* Prevent visual flashing during rendering calculations */
+}
+
+#flipbook {
+    display: block;
+    margin: 0 auto;
+}
+
+#flipbook .page-node {
+    background-color: #faf8f5;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+}
+
+#flipbook img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+    display: block;
+    pointer-events: none; 
+}
+
+/* Soft center fold depth shadows */
+#flipbook .odd .page-node {
+    background-image: linear-gradient(to left, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.02) 4%, rgba(0,0,0,0) 10%);
+}
+
+#flipbook .even .page-node {
+    background-image: linear-gradient(to right, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.02) 4%, rgba(0,0,0,0) 10%);
+}
+
+/* Soft Minimalist Navigation Arrows */
+.nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(250, 248, 245, 0.4); 
+    border: 1px solid rgba(140, 131, 117, 0.15);
+    color: #7a7164;
+    font-size: 1.6rem;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+.nav-btn:hover {
+    background: rgba(250, 248, 245, 0.8);
+    color: #4a443c;
+    border-color: rgba(140, 131, 117, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+#prev-btn { left: 24px; }
+#next-btn { right: 24px; }
+
+@media (max-width: 600px) {
+    .nav-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+    #prev-btn { left: 8px; }
+    #next-btn { right: 8px; }
+}
+
+/* download button */
+#floating-download-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 1000;
+    width: 56px;
+    height: 56px;
+    background-color: #faf8f5; /* Matches your paper color */
+    color: #7a7164;            /* Matches your arrow button color */
+    border: 1px solid rgba(140, 131, 117, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0.5;              /* Semi-transparent by default */
+    transition: all 0.3s ease;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+#floating-download-btn:hover {
+    opacity: 1;                /* Fully visible on hover */
+    background-color: #faf8f5;
+    color: #4a443c;
+    border-color: rgba(140, 131, 117, 0.3);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+#floating-download-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* Shift position slightly on small mobile screens to prevent overlapping arrow buttons */
+@media (max-width: 600px) {
+    #floating-download-btn {
+        bottom: 16px;
+        right: 16px;
+        width: 48px;
+        height: 48px;
+    }
+    #floating-download-btn svg {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+/*Back button*/
+#floating-back-btn {
+    position: fixed;
+    top: 24px;
+    left: 24px;
+    z-index: 1000;
+    width: 54px;
+    height: 54px;
+    background-color: rgba(250, 248, 245, 0.4); /* Matches your arrow navigation background */
+    color: #7a7164;            /* Matches your arrow navigation text color */
+    border: 1px solid rgba(140, 131, 117, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0.5;              /* Semi-transparent by default */
+    transition: all 0.3s ease;
+    text-decoration: none;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+#floating-back-btn:hover {
+    opacity: 1;                /* Fully visible on hover */
+    background-color: rgba(250, 248, 245, 0.8);
+    color: #4a443c;
+    border-color: rgba(140, 131, 117, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+#floating-back-btn svg {
+    width: 22px;
+    height: 22px;
+}
+
+/* Shift position slightly on small mobile screens to stay uniform with the arrow buttons */
+@media (max-width: 600px) {
+    #floating-back-btn {
+        top: 16px;
+        left: 16px;
+        width: 40px;
+        height: 40px;
+    }
+    #floating-back-btn svg {
+        width: 18px;
+        height: 18px;
+    }
+}
