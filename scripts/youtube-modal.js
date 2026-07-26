@@ -24,8 +24,11 @@ openModalBtn.addEventListener('click', () => {
     modalOverlay.style.visibility = "visible";
     modalOverlay.classList.add('active');
     
+    // Explicit tracking origin parameter ensures browser flags bypass modern sandboxed domain blocks
+    const localOrigin = window.location.origin && window.location.origin !== 'null' ? window.location.origin : '*';
+
     // Constructs the secure URL path with explicit autoplay and origin arguments unblocked
-    const embedUrl = `https://www.youtube.com/embed/{videoId}?si=UjxBByjRppJNDNbm&autoplay=1&modestbranding=1&rel=0`;
+    const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0&enablejsapi=1&origin=${encodeURIComponent(localOrigin)}`;
     modalVideo.setAttribute('src', embedUrl);
 });
 
