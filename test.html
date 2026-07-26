@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+</head>
+<body>
+    <button id="openBtn">Open Modal</button>
+
+    <dialog id="myModal">
+    <form method="dialog">
+        <h2>Hello!</h2>
+        <p>
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/BzNGvUkCHRc?si=l-Xybs_IJKpQQAzk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>            
+
+        </p>
+        <button type="submit">Close</button>
+    </form>
+    </dialog>
+
+<script>
+    const modal = document.getElementById('myModal');
+    const openBtn = document.getElementById('openBtn');
+
+    openBtn.addEventListener('click', () => {
+    modal.showModal();
+    });
+
+    // Optional: Close when clicking outside the modal box on the backdrop
+    modal.addEventListener('click', (event) => {
+    const rect = modal.getBoundingClientRect();
+    if (
+        event.clientX < rect.left ||
+        event.clientX > rect.right ||
+        event.clientY < rect.top ||
+        event.clientY > rect.bottom
+    ) {
+        modal.close();
+    }
+    });
+
+</script>
+
+</body>
+</html>
