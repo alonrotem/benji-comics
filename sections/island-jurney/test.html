@@ -59,7 +59,7 @@
                 <div class="book-meta">61 Pages, 700 Panels</div>
             </div>
         </a>
-
+<!--
         <a href="https://youtu.be/BzNGvUkCHRc?si=_791mRZOK2ctvhLx" class="book-item youtube-link" target="_blank">
             
             <div class="cover-wrapper">
@@ -70,8 +70,7 @@
                 </div>
             </div>  
         </a>
-  
-        <!--
+    -->
         <div id="youtube-player" class="book-item youtube-link" target="_blank">    
             <div class="cover-wrapper">
                 <div  class="play-button"><img src="../../images/youtube-logo.png" /></div>
@@ -81,8 +80,16 @@
                 </div>
             </div>  
         </div>
-        -->
+        
         <!-- Modal -->        
+        <div class="modal-overlay" id="modalOverlay">
+            <div class="modal-content">
+                <button class="close-btn" id="closeModalBtn" aria-label="Close modal">&times;</button>
+                <div class="video-container" id="videoContainer">
+                    <div id="player"></div>
+                </div>
+            </div>
+        </div>
         <!--/Modal-->
 
     </main>
@@ -92,6 +99,15 @@
         &copy; <script>document.write(new Date().getFullYear());</script> Benji Rotem. All rights reserved.
     </div>
 
+    <script>
+        const videoId = 'BzNGvUkCHRc'; 
+        const aspectRatio = '4:3'; // Options: '4:3', '16:9', '1:1', '21:9'
+        const modalOverlay = document.getElementById('modalOverlay');
+        const openModalBtn = document.getElementById('youtube-player');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const videoContainer = document.getElementById('videoContainer');
+    </script>
+    <script src="../../scripts/youtube-modal.js"></script>
 
 </body>
 </html>
