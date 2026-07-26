@@ -26,7 +26,7 @@ applyAspectRatio(aspectRatio);
 // 2. Asynchronously load the official IFrame API
 const tag = document.createElement('script');
 tag.src = "https://youtube.com";
-const firstScriptTag = document.getElementsByTagName('script');
+const firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
 // 3. API Initialization Polling Loop

@@ -1,6 +1,7 @@
 body {
+    /*
     font-family: system-ui, -apple-system, sans-serif;
-    background: #121214;
+    background: #121214;*/
     display: flex;
     justify-content: center;
     align-items: center;
@@ -50,6 +51,7 @@ body {
     visibility: hidden;
     pointer-events: none;
     transition: opacity 0.4s ease, visibility 0.4s ease;
+    z-index: 9999;
 }
 
 /* Responsive Modal Box Container */
