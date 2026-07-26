@@ -51,20 +51,15 @@
         <!-- Book 2 Card Entry -->
         <a href="javascript:void(0)" class="book-item">
             <div class="cover-wrapper coming-soon">
-                <div class="message"><div>COMING SOON</div></div>
+                <div class="message"><div>Coming Soon!</div></div>
                 <img src="./island-jurney-1/cover.png" alt="Island Journey 1" >
             </div>  
             <div class="book-info">
                 <div class="book-title">Island Journey 1 (2026)</div>
                 <div class="book-meta">61 Pages, 700 Panels</div>
             </div>
-        <!--
-            <div class="book-description">
-                Avery, a young person with big dreams believes in a very popular conspiracy theory about a secret government controlling every other continent/islands government. So he goes to earth power school to master his abilities and makes a plan to save the world.
-            </div>
-        -->
         </a>
-
+<!--
         <a href="https://youtu.be/BzNGvUkCHRc?si=_791mRZOK2ctvhLx" class="book-item youtube-link" target="_blank">
             
             <div class="cover-wrapper">
@@ -75,8 +70,7 @@
                 </div>
             </div>  
         </a>
-  
-        <!--
+    -->
         <div id="youtube-player" class="book-item youtube-link" target="_blank">    
             <div class="cover-wrapper">
                 <div  class="play-button"><img src="../../images/youtube-logo.png" /></div>
@@ -86,8 +80,17 @@
                 </div>
             </div>  
         </div>
-        -->
+        
         <!-- Modal -->        
+        <div class="modal-overlay" id="modalOverlay">
+            <div class="modal-content">
+                <button class="close-btn" id="closeModalBtn" aria-label="Close modal">&times;</button>
+                <div class="video-container" id="videoContainer">
+                    <!-- Iframe is generated cleanly right here inside the layout container -->
+                    <iframe id="modalVideo" src="" allow="autoplay; fullscreen; picture-in-picture" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+            </div>
+        </div>
         <!--/Modal-->
 
     </main>
@@ -97,6 +100,16 @@
         &copy; <script>document.write(new Date().getFullYear());</script> Benji R. Site developed by Alon R. All rights reserved.
     </div>
 
+    <script>
+        const videoId = 'BzNGvUkCHRc'; 
+        const aspectRatio = '4:3'; // Supported configurations: '4:3', '16:9', '1:1'
+        const modalOverlay = document.getElementById('modalOverlay');
+        const openModalBtn = document.getElementById('youtube-player');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const videoContainer = document.getElementById('videoContainer');
+        const modalVideo = document.getElementById('modalVideo');
+    </script>
+    <script src="../../scripts/youtube-modal.js"></script>
 
 </body>
 </html>
