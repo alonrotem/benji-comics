@@ -85,7 +85,7 @@
         <div class="modal-overlay" id="modalOverlay">
             <div class="modal-content">
                 <button class="close-btn" id="closeModalBtn" aria-label="Close modal">&times;</button>
-                <div class="video-container">
+                <div class="video-container" id="videoContainer">
                     <div id="player"></div>
                 </div>
             </div>
@@ -101,9 +101,11 @@
 
     <script>
         const videoId = 'BzNGvUkCHRc'; 
+        const aspectRatio = '4:3'; // Options: '4:3', '16:9', '1:1', '21:9'
         const modalOverlay = document.getElementById('modalOverlay');
         const openModalBtn = document.getElementById('youtube-player');
         const closeModalBtn = document.getElementById('closeModalBtn');
+        const videoContainer = document.getElementById('videoContainer');
     </script>
     <script src="../../scripts/youtube-modal.js"></script>
 

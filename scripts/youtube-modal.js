@@ -1,33 +1,48 @@
+/*
+const aspectRatio = '4:3'; // Options: '4:3', '16:9', '1:1', '21:9'
+const videoId = 'dQw4w9WgXcQ'; 
+const modalOverlay = document.getElementById('modalOverlay');
+const openModalBtn = document.getElementById('openModalBtn');
+const closeModalBtn = document.getElementById('closeModalBtn');
+const videoContainer = document.getElementById('videoContainer');
+*/
+
+
 let player;
 let isPlayerReady = false;
 
-// 1. Instantly append the API Script Tag
+// 1. Calculate and set the aspect ratio dynamically
+function applyAspectRatio(ratio) {
+    const parts = ratio.split(':');
+    if (parts.length === 2) {
+        const width = parseFloat(parts[0]);
+        const height = parseFloat(parts[1]);
+        const paddingPercentage = (height / width) * 100;
+        videoContainer.style.paddingBottom = `${paddingPercentage}%`;
+    }
+}
+applyAspectRatio(aspectRatio);
+
+// 2. Asynchronously load the official IFrame API
 const tag = document.createElement('script');
-tag.src = "https://www.youtube.com/iframe_api";
-const firstScriptTag = document.getElementsByTagName('script')[0];
+tag.src = "https://youtube.com";
+const firstScriptTag = document.getElementsByTagName('script');
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-// 2. Continuous Verification Loop using an Interval Fallback
-// This acts as a net to catch the initialization even if the global callback finishes early.
+// 3. API Initialization Polling Loop
 const checkYoutubeAPI = setInterval(() => {
     if (typeof YT !== 'undefined' && YT.loaded && typeof YT.ready === 'function') {
-        clearInterval(checkYoutubeAPI); // Clear the interval instantly
-        
-        // Use the internal engine loader wrapper to safe-mount the configuration
+        clearInterval(checkYoutubeAPI);
         YT.ready(initializePlayer);
     }
 }, 50);
 
-// 3. Fallback handle matching traditional behaviors 
 window.onYouTubeIframeAPIReady = function() {
-    if (!player) {
-        initializePlayer();
-    }
+    if (!player) initializePlayer();
 };
 
-// 4. Primary Modular Initialization Command
 function initializePlayer() {
-    if (player) return; // Prevent double creation artifacts
+    if (player) return;
 
     player = new YT.Player('player', {
         height: '100%',
@@ -41,17 +56,18 @@ function initializePlayer() {
             'origin': window.location.origin || '*'
         },
         events: {
-            'onReady': (event) => {
+            'onReady': () => {
                 isPlayerReady = true;
                 openModalBtn.disabled = false; 
-                //openModalBtn.innerText = "Watch Video";
+                openModalBtn.innerText = "Watch Video";
             }
         }
     });
 }
 
-// 5. Open Modal Trigger Logic
+// 4. Open Modal Control
 openModalBtn.addEventListener('click', () => {
+    modalOverlay.style.visibility = "visible"; // Force visibility flip before transition triggers
     modalOverlay.classList.add('active');
     if (isPlayerReady && player && typeof player.playVideo === 'function') {
         setTimeout(() => {
@@ -60,7 +76,7 @@ openModalBtn.addEventListener('click', () => {
     }
 });
 
-// 6. Close Modal Controller 
+// 5. Close Modal Control
 function closeModal() {
     modalOverlay.classList.remove('active');
     if (isPlayerReady && player && typeof player.stopVideo === 'function') {
@@ -73,5 +89,13 @@ closeModalBtn.addEventListener('click', closeModal);
 modalOverlay.addEventListener('click', (e) => {
     if (e.target === modalOverlay) {
         closeModal();
+    }
+});
+
+// 6. Safe Animation End Event Listener
+// Completely strips visibility states only after the overlay opacity transition finishes fading out
+modalOverlay.addEventListener('transitionend', (e) => {
+    if (!modalOverlay.classList.contains('active') && e.propertyName === 'opacity') {
+        modalOverlay.style.visibility = "hidden";
     }
 });
