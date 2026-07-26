@@ -1,43 +1,197 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated YouTube Modal</title>
+    <style>
+        /* Smooth, dark background styling */
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #121214;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        /* Styled Trigger Button */
+        .open-btn {
+            background: linear-gradient(135deg, #ff0055, #ff5500);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 0, 85, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .open-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 0, 85, 0.4);
+        }
+
+        /* Backdrop Blur Container */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        /* Modal Box Animation Setup */
+        .modal-content {
+            background: #1e1e24;
+            padding: 24px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            position: relative;
+            transform: scale(0.8) translateY(30px);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* Aspect Ratio Box for 16:9 Video */
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            margin-top: 15px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        /* Modern Close Button */
+        .close-btn {
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            width: 36px;
+            height: 36px;
+            background: #ff0055;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 20px;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: background 0.2s, transform 0.2s;
+        }
+        .close-btn:hover {
+            background: #e0004c;
+            transform: scale(1.1);
+        }
+
+        /* Active Classes to trigger transitions */
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-overlay.active .modal-content {
+            transform: scale(1) translateY(0);
+        }
+    </style>
 </head>
 <body>
-    <button id="openBtn">Open Modal</button>
 
-    <dialog id="myModal">
-    <form method="dialog">
-        <h2>Hello!</h2>
-        <p>
-            <iframe width="560" height="315" src="https://www.youtube.com/embed/BzNGvUkCHRc?si=l-Xybs_IJKpQQAzk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>            
+    <!-- Trigger Button -->
+    <button class="open-btn" id="openModalBtn">Watch Video</button>
 
-        </p>
-        <button type="submit">Close</button>
-    </form>
-    </dialog>
+    <!-- Modal Backdrop -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <!-- Close Button -->
+            <button class="close-btn" id="closeModalBtn" aria-label="Close modal">&times;</button>
+            
+            <!-- Video Wrapper (Targeted by YouTube API) -->
+            <div class="video-container">
+                <div id="player"></div>
+            </div>
+        </div>
+    </div>
 
-<script>
-    const modal = document.getElementById('myModal');
-    const openBtn = document.getElementById('openBtn');
+    <script>
+        // REPLACE THIS WITH YOUR YOUTUBE VIDEO ID
+        const videoId = 'dQw4w9WgXcQ'; 
 
-    openBtn.addEventListener('click', () => {
-    modal.showModal();
-    });
+        let player;
+        const modalOverlay = document.getElementById('modalOverlay');
+        const openModalBtn = document.getElementById('openModalBtn');
+        const closeModalBtn = document.getElementById('closeModalBtn');
 
-    // Optional: Close when clicking outside the modal box on the backdrop
-    modal.addEventListener('click', (event) => {
-    const rect = modal.getBoundingClientRect();
-    if (
-        event.clientX < rect.left ||
-        event.clientX > rect.right ||
-        event.clientY < rect.top ||
-        event.clientY > rect.bottom
-    ) {
-        modal.close();
-    }
-    });
+        // 1. Load the YouTube IFrame Player API asynchronously
+        const tag = document.createElement('script');
+        tag.src = "https://youtube.com";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-</script>
+        // 2. Create the internal <iframe> once the API code downloads
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '100%',
+                width: '100%',
+                videoId: videoId,
+                playerVars: {
+                    'playsinline': 1,
+                    'rel': 0,
+                    // Forces the origin to fall back nicely on local file:// networks
+                    'origin': window.location.origin || 'http://localhost'
+                }
+            });
+        }
 
+        // 3. Open Modal Event (Plays Video)
+        openModalBtn.addEventListener('click', () => {
+            modalOverlay.classList.add('active');
+            if (player && typeof player.playVideo === 'function') {
+                player.playVideo();
+            }
+        });
+
+        // 4. Close Modal Event (Stops Video)
+        function closeModal() {
+            modalOverlay.classList.remove('active');
+            if (player && typeof player.stopVideo === 'function') {
+                player.stopVideo(); // Completely stops buffering data
+                // Alternative: player.pauseVideo(); if you prefer pausing
+            }
+        }
+
+        closeModalBtn.addEventListener('click', closeModal);
+
+        // Close modal if user clicks anywhere on the dark blurred backdrop
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                closeModal();
+            }
+        });
+    </script>
 </body>
 </html>
