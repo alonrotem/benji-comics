@@ -7,11 +7,7 @@ const openModalBtn = document.getElementById('openModalBtn');
 const closeModalBtn = document.getElementById('closeModalBtn');
 const videoContainer = document.getElementById('videoContainer');
 */
-// CONFIGURATION PARAMETERS
-let player;
-let isApiReady = false;
-
-// 1. Calculate dynamic layout dimension bounding values
+// 1. Calculate dynamic aspect ratio percentage rules
 function applyAspectRatio(ratio) {
     const parts = ratio.split(':');
     if (parts.length === 2) {
@@ -23,79 +19,21 @@ function applyAspectRatio(ratio) {
 }
 applyAspectRatio(aspectRatio);
 
-// 2. Load API Engine Assets Safely
-const tag = document.createElement('script');
-tag.src = "https://youtube.com";
-const scripts = document.getElementsByTagName('script');
-if (scripts.length > 0) {
-    scripts[0].parentNode.insertBefore(tag, scripts[0]);
-} else {
-    document.head.appendChild(tag);
-}
-
-// 3. Keep verification hooks open
-const checkYoutubeAPI = setInterval(() => {
-    if (typeof YT !== 'undefined' && YT.loaded && typeof YT.ready === 'function') {
-        clearInterval(checkYoutubeAPI);
-        YT.ready(() => {
-            isApiReady = true;
-            openModalBtn.disabled = false;
-            openModalBtn.innerText = "Watch Video";
-        });
-    }
-}, 50);
-
-window.onYouTubeIframeAPIReady = function() {
-    isApiReady = true;
-    openModalBtn.disabled = false;
-    openModalBtn.innerText = "Watch Video";
-};
-
-// 4. Dynamic initialization on open
-// Instantiating the frame after elements render prevents blank layout errors
-function createPlayerInstance() {
-    // Re-create the targeted placement anchor if previous instance destroyed it
-    if (!document.getElementById('player')) {
-        const newDiv = document.createElement('div');
-        newDiv.id = 'player';
-        videoContainer.appendChild(newDiv);
-    }
-
-    player = new YT.Player('player', {
-        height: '100%',
-        width: '100%',
-        videoId: videoId,
-        playerVars: {
-            'autoplay': 1, // Automatically starts once the source establishes communication
-            'playsinline': 1,
-            'rel': 0,
-            'enablejsapi': 1,
-            'origin': window.location.origin || '*'
-        }
-    });
-}
-
-// 5. Open Controller Interceptor
+// 2. Open Modal handler -> Injects the source URL to instantly force autoplay
 openModalBtn.addEventListener('click', () => {
-    modalOverlay.style.visibility = "visible"; 
+    modalOverlay.style.visibility = "visible";
     modalOverlay.classList.add('active');
     
-    if (isApiReady) {
-        // Short delay lets the layout finish expansion scaling before instantiation
-        setTimeout(() => {
-            createPlayerInstance();
-        }, 200);
-    }
+    // Constructs the secure URL path with explicit autoplay and origin arguments unblocked
+    const embedUrl = `https://www.youtube.com/embed/{videoId}?si=UjxBByjRppJNDNbm&autoplay=1&modestbranding=1&rel=0`;
+    modalVideo.setAttribute('src', embedUrl);
 });
 
-// 6. Complete Destruction on Close
-// Destroying the instance forces the visibility layer to shut down and unmount properly
+// 3. Close Modal handler -> Strips out the source attribute cleanly
+// Emptying the src completely cuts connection lines and stops all music/video instantly
 function closeModal() {
     modalOverlay.classList.remove('active');
-    if (player && typeof player.destroy === 'function') {
-        player.destroy(); // Tears down the subframe entirely to halt background audio paths
-        player = null;
-    }
+    modalVideo.setAttribute('src', ''); 
 }
 
 closeModalBtn.addEventListener('click', closeModal);
@@ -106,9 +44,16 @@ modalOverlay.addEventListener('click', (e) => {
     }
 });
 
-// 7. Cleanup Display Attributes
+// 4. Safely switch off pointer visibility blocks only after overlay finish fading
 modalOverlay.addEventListener('transitionend', (e) => {
     if (!modalOverlay.classList.contains('active') && e.propertyName === 'opacity') {
         modalOverlay.style.visibility = "hidden";
+    }
+});
+
+// 5. Accessibility Feature: Pressing the escape key automatically runs close operations
+window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
+        closeModal();
     }
 });
