@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Benji Comics</title>
+    <title>Benji Comics - Island Journey</title>
     <link rel="stylesheet" href="../../css/common.css">
     <link rel="stylesheet" href="../../css/library.css">
+    <link rel="stylesheet" href="../../css/youtube-modal.css">
 
     <link rel="apple-touch-icon" sizes="180x180" href="../../images/favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="../../images/favicon/favicon-32x32.png">
@@ -58,7 +59,7 @@
                 <div class="book-meta">61 Pages, 700 Panels</div>
             </div>
         </a>
-
+<!--
         <a href="https://youtu.be/BzNGvUkCHRc?si=_791mRZOK2ctvhLx" class="book-item youtube-link" target="_blank">
             
             <div class="cover-wrapper">
@@ -68,7 +69,28 @@
                     <div>Watch the trailer!</div>
                 </div>
             </div>  
-        </a>        
+        </a>
+    -->
+        <div id="youtube-player" class="book-item youtube-link" target="_blank">    
+            <div class="cover-wrapper">
+                <div  class="play-button"><img src="../../images/youtube-logo.png" /></div>
+                <div class="watch">
+                    <img src="./island-jurney-1/trailer-thumb.jpg" alt="Watch the trailer on YouTube!" >
+                    <div>Watch the trailer!</div>
+                </div>
+            </div>  
+        </div>
+        
+        <!-- Modal -->        
+        <div class="modal-overlay" id="modalOverlay">
+            <div class="modal-content">
+                <button class="close-btn" id="closeModalBtn" aria-label="Close modal">&times;</button>
+                <div class="video-container">
+                    <div id="player"></div>
+                </div>
+            </div>
+        </div>
+        <!--/Modal-->
 
     </main>
 
@@ -76,6 +98,14 @@
     <div id="floating-copyright">
         &copy; <script>document.write(new Date().getFullYear());</script> Benji Rotem. All rights reserved.
     </div>
+
+    <script>
+        const videoId = 'BzNGvUkCHRc'; 
+        const modalOverlay = document.getElementById('modalOverlay');
+        const openModalBtn = document.getElementById('youtube-player');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+    </script>
+    <script src="../../scripts/youtube-modal.js"></script>
 
 </body>
 </html>
