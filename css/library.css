@@ -191,6 +191,11 @@ header img {
     align-items: center;
 }
 
+.coming-soon .message div {
+    text-align: center;
+    padding: 20px;
+}
+
 .coming-soon:hover .message {
     display: flex !important;
 }
