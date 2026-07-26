@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Animated YouTube Modal - Production Ready</title>
-    <!-- Set a clean fallback referrer standard for cross-origin compliance -->
+    <title>Animated YouTube Modal - Bulletproof Fix</title>
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <style>
         body {
@@ -34,7 +33,6 @@
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(255, 0, 85, 0.4);
         }
-        /* Style when the button is waiting for YouTube API to load */
         .open-btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
@@ -77,12 +75,12 @@
         .video-container {
             position: relative;
             width: 100%;
-            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            padding-bottom: 56.25%; 
             height: 0;
             margin-top: 15px;
             border-radius: 8px;
             overflow: hidden;
-            background: #000; /* Prevent white flash before player loads */
+            background: #000; 
         }
         .video-container iframe {
             position: absolute;
@@ -131,16 +129,11 @@
 </head>
 <body>
 
-    <!-- Trigger Button (Disabled until YouTube API tells us it's completely ready) -->
     <button class="open-btn" id="openModalBtn" disabled>Loading Player...</button>
 
-    <!-- Modal Backdrop -->
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal-content">
-            <!-- Close Button -->
             <button class="close-btn" id="closeModalBtn" aria-label="Close modal">&times;</button>
-            
-            <!-- Video Wrapper Target Element -->
             <div class="video-container">
                 <div id="player"></div>
             </div>
@@ -157,61 +150,75 @@
         const openModalBtn = document.getElementById('openModalBtn');
         const closeModalBtn = document.getElementById('closeModalBtn');
 
-        // 1. Asynchronously load the official IFrame API
+        // 1. Instantly append the API Script Tag
         const tag = document.createElement('script');
-        tag.src = "https://youtube.com";
+        tag.src = "https://www.youtube.com/iframe_api";
         const firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-        // 2. Global API callback initializer function
+        // 2. Continuous Verification Loop using an Interval Fallback
+        // This acts as a net to catch the initialization even if the global callback finishes early.
+        const checkYoutubeAPI = setInterval(() => {
+            if (typeof YT !== 'undefined' && YT.loaded && typeof YT.ready === 'function') {
+                clearInterval(checkYoutubeAPI); // Clear the interval instantly
+                
+                // Use the internal engine loader wrapper to safe-mount the configuration
+                YT.ready(initializePlayer);
+            }
+        }, 50);
+
+        // 3. Fallback handle matching traditional behaviors 
         window.onYouTubeIframeAPIReady = function() {
+            if (!player) {
+                initializePlayer();
+            }
+        };
+
+        // 4. Primary Modular Initialization Command
+        function initializePlayer() {
+            if (player) return; // Prevent double creation artifacts
+
             player = new YT.Player('player', {
                 height: '100%',
                 width: '100%',
                 videoId: videoId,
                 playerVars: {
-                    'autoplay': 0, // Controlled strictly via button logic later
+                    'autoplay': 0,
                     'playsinline': 1,
                     'rel': 0,
-                    'enablejsapi': 1, // Crucial parameter to allow API commands across live domains
-                    'origin': window.location.origin || '*' // Adapts seamlessly to file:// or absolute HTTPS domains
+                    'enablejsapi': 1,
+                    'origin': window.location.origin || '*'
                 },
                 events: {
-                    'onReady': onPlayerReady // Fires only when the layout element completely mounts
+                    'onReady': (event) => {
+                        isPlayerReady = true;
+                        openModalBtn.disabled = false; 
+                        openModalBtn.innerText = "Watch Video";
+                    }
                 }
             });
         }
 
-        // 3. Callback tracking state validation completion
-        function onPlayerReady(event) {
-            isPlayerReady = true;
-            openModalBtn.disabled = false; // Activation button lights up safely
-            openModalBtn.innerText = "Watch Video";
-        }
-
-        // 4. Modal Activation Trigger 
+        // 5. Open Modal Trigger Logic
         openModalBtn.addEventListener('click', () => {
             modalOverlay.classList.add('active');
-            // Check state verification explicitly before tracking commands
             if (isPlayerReady && player && typeof player.playVideo === 'function') {
-                // Short timeout gives CSS transitions 50ms to finish painting layout elements
                 setTimeout(() => {
                     player.playVideo();
                 }, 50);
             }
         });
 
-        // 5. Deactivation Controller (Stops Data Buffering)
+        // 6. Close Modal Controller 
         function closeModal() {
             modalOverlay.classList.remove('active');
             if (isPlayerReady && player && typeof player.stopVideo === 'function') {
-                player.stopVideo(); // Terminating execution drops local active connection threads
+                player.stopVideo(); 
             }
         }
 
         closeModalBtn.addEventListener('click', closeModal);
 
-        // Backdrop Dismissal Target
         modalOverlay.addEventListener('click', (e) => {
             if (e.target === modalOverlay) {
                 closeModal();
