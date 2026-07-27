@@ -1,3 +1,38 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100vh; /* Changed from height to min-height */
+    background-color: #eae6df;
+    overflow-x: hidden;
+    overflow-y: auto;   /* Allows smooth vertical scrolling if elements expand */
+    font-family: system-ui, sans-serif;
+    
+    /* Modern flex layout to push the footer down */
+    display: flex;
+    flex-direction: column;
+}
+
+body {
+    padding: 20px;
+}
+
+.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    flex-grow: 1;
+}
+
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+
 /*Back button*/
 #floating-back-btn {
     position: fixed;
@@ -48,7 +83,33 @@
     }
 }
 
-#floating-copyright {
+footer {
+    width: 100%;
+    text-align: center;
+    padding-top: 16px;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    color: #7a7164;            
+    opacity: 0.4;              /* Semi-transparent by default */
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    user-select: none;         
+    background-color: transparent;
+    margin-top: auto;          /* Pushes itself to the absolute bottom of the flexbox path */
+}
+
+footer:hover {
+    opacity: 1;                /* Fully vibrant on hover */
+}
+
+@media (max-width: 600px) {
+    footer {
+        font-size: 0.75rem;
+        padding: 12px 0;
+    }
+}
+
+footer.floating-footer {
     position: fixed;
     bottom: 12px;
     left: 50%;
@@ -63,15 +124,18 @@
     transition: opacity 0.3s ease, visibility 0.3s ease;
     white-space: nowrap;
     user-select: none;         /* Prevents accidental text highlights during mouse dragging */
+    padding: 0 !important;
+    display: inline;
+    width: auto;    
 }
 
-#floating-copyright:hover {
+footer.floating-footer:hover {
     opacity: 1;                /* Fully vibrant when hovered */
 }
 
 /* Keep it legible on small mobile screens */
 @media (max-width: 600px) {
-    #floating-copyright {
+    footer.floating-footer {
         font-size: 0.75rem;
         bottom: 8px;
     }

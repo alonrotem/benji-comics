@@ -102,7 +102,7 @@ $(document).ready(function() {
                         "transition": "transform 0.15s ease-out"
                     });
                     
-                    $("#floating-copyright").css({ "opacity": "0.4", "visibility": "visible" });
+                    $(".floating-footer").css({ "opacity": "0.4", "visibility": "visible" });
 
                     if (page == 1 || page == totalPages) {
                         flipbook.turn('corner', 'null');
@@ -274,7 +274,7 @@ $("#viewport-wrapper").on("wheel", function(e) {
         $("#floating-reset-zoom-btn").css({ "opacity": "0", "visibility": "hidden", "pointer-events": "none" });
 
         $(".book-edge-hover").css("pointer-events", "auto");
-        $("#floating-copyright").css({ "opacity": "0.4", "visibility": "visible" });
+        $(".floating-footer").css({ "opacity": "0.4", "visibility": "visible" });
 
         setTimeout(function() {
             if (currentScale === 1) {
@@ -291,7 +291,7 @@ $("#viewport-wrapper").on("wheel", function(e) {
         $("#floating-reset-zoom-btn").css({ "opacity": "0.5", "visibility": "visible", "pointer-events": "auto" });
 
         $(".book-edge-hover").css("pointer-events", "none");
-        $("#floating-copyright").css({ "opacity": "0", "visibility": "hidden" });
+        $(".floating-footer").css({ "opacity": "0", "visibility": "hidden" });
     }
     
     updatePanCursor();
@@ -316,7 +316,7 @@ function triggerZoomReset() {
 
     // Restore interactive components
     $(".book-edge-hover").css("pointer-events", "auto");
-    $("#floating-copyright").css({ "opacity": "0.4", "visibility": "visible" });
+    $(".floating-footer").css({ "opacity": "0.4", "visibility": "visible" });
 
     setTimeout(function() {
         if (currentScale === 1) {
@@ -371,7 +371,7 @@ $("#viewport-wrapper").on("touchmove", function(e) {
             });
             $("#floating-reset-zoom-btn").css({ "opacity": "0", "visibility": "hidden", "pointer-events": "none" });
             $(".book-edge-hover").css("pointer-events", "auto");
-            $("#floating-copyright").css({ "opacity": "0.4", "visibility": "visible" });
+            $(".floating-footer").css({ "opacity": "0.4", "visibility": "visible" });
         } else {
             $("#flipbook-wrapper").css({
                 "transform": "scale(" + currentScale + ") translate(" + (translateX / currentScale) + "px, " + (translateY / currentScale) + "px)",
@@ -379,7 +379,7 @@ $("#viewport-wrapper").on("touchmove", function(e) {
             });
             $("#floating-reset-zoom-btn").css({ "opacity": "0.6", "visibility": "visible", "pointer-events": "auto" });
             $(".book-edge-hover").css("pointer-events", "none");
-            $("#floating-copyright").css({ "opacity": "0", "visibility": "hidden" });
+            $(".floating-footer").css({ "opacity": "0", "visibility": "hidden" });
         }
         updatePanCursor();
     }
